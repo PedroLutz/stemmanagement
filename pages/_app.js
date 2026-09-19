@@ -51,20 +51,41 @@ function AuthGuard({ children }) {
 }
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+
+  const isPublicPage = Component.isPublic || router.pathname.startsWith('/preview');
+
   return (
     <AuthProvider>
       <PermissionProvider>
-        <ColorProvider>
-          <AuthGuard>
-            <TituloProvider>
-              <ToolbarProvider>
-                <InnerApp Component={Component} pageProps={pageProps} />
-              </ToolbarProvider>
-            </TituloProvider>
-          </AuthGuard>
-        </ColorProvider>
+        {isPublicPage ? (
+          <PublicApp Component={Component} pageProps={pageProps} />
+        ) : (
+          <TituloProvider>
+            <ColorProvider>
+              <AuthGuard>
+                <ToolbarProvider>
+                  <InnerApp Component={Component} pageProps={pageProps} />
+                </ToolbarProvider>
+              </AuthGuard>
+            </ColorProvider>
+          </TituloProvider>
+        )}
       </PermissionProvider>
     </AuthProvider>
+  );
+}
+
+function PublicApp({ Component, pageProps }) {
+  return (
+    <div>
+      <Head>
+        <title>SM - Gantt</title>
+        <link rel="icon" href="/images/logo.png" />
+      </Head>
+      <Component {...pageProps} />
+      <Footer />
+    </div>
   );
 }
 

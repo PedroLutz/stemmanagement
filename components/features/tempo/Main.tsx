@@ -2,7 +2,7 @@ import { TempoProvider, useTempo } from "./data/TempoContext"
 import Loading from "../../ui/Loading";
 import { DepsData, GanttChart, PlanData, RealData } from "../../ui/GanttChart/GanttChart";
 import { useCallback, useEffect, useState } from "react";
-import { handleReq } from "../../../functions/crud_s";
+import { handleFetch, handlePostFetch, handleReq } from "../../../functions/crud_s";
 import useAuth from "../../../hooks/useAuth";
 import usePerm from '../../../hooks/usePerm';
 import { useToolbar } from "../../../hooks/useToolbar";
@@ -26,18 +26,36 @@ const Content = () => {
     const {user, token} = useAuth();
     const { isEditor } = usePerm();
 
-    const { setExportCSVClick, setHelpClick } = useToolbar();
+    const { setExportCSVClick, setHelpClick, setGeneratePreviewLink } = useToolbar();
     const [ showHelp, setShowHelp ] = useState(false);
     const [ modalText, setModalText ] = useState<string | null>(null);
     const [ confirmResetDatesOfId, setConfirmResetDatesOfId ] = useState<number | string | null>(null);
 
+    const generatePreviewLink = async () => {
+        setIsLoading(true);
+        const data = await handleFetch({
+            table: "profiles",
+            query: "all",
+            token,
+        });
+
+        setIsLoading(false);
+        if(!data || !data.data[0].public_token) {
+            return;
+        };
+        // navigator.clipboard.writeText(`http://localhost:6969/preview/gantt?token=${data.data[0].public_token}`)
+        navigator.clipboard.writeText(`https://stemmanagement.vercel.app/preview/gantt?token=${data.data[0].public_token}`)
+    }
+
     useEffect(() => {
             setHelpClick(() => () => setShowHelp(true));
+            setGeneratePreviewLink(() => generatePreviewLink)
     
             return (() => {
                 setHelpClick(null);
+                setGeneratePreviewLink(null);
             })
-        }, []);
+        }, [token]);
 
     const handleOnQuickUpdate = useCallback( async (id: number | string, action: QuickUpdateActionType, 
         validate: (gantt: GanttResType) => { isValid: boolean, message: string | null }
