@@ -157,7 +157,7 @@ export const GanttChart = ({ tasks, onSave, onStart, onExecute, onComplete, onRe
 
     // A Tabela agora soma as larguras atuais do Estado E a configuração visual
     const TABLE_WIDTH = colWidths.area 
-        + (tableConfig.showActions ? colWidths.actions : 0) 
+        + (tableConfig.showActions && isEditor ? colWidths.actions : 0) 
         + colWidths.id 
         + colWidths.item 
         + (tableConfig.showDates ? colWidths.type : 0) 
@@ -470,10 +470,12 @@ export const GanttChart = ({ tasks, onSave, onStart, onExecute, onComplete, onRe
                             Show Sidebar Table
                         </label>
                         <div style={{ display: "flex", flexDirection: "column", gap: "8px", paddingLeft: "8px", borderLeft: "2px solid #e2e8f0", marginLeft: "4px", opacity: tableConfig.hide ? 0.5 : 1, pointerEvents: tableConfig.hide ? 'none' : 'auto' }}>
-                            <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", cursor: "pointer", color: "#475569" }}>
-                                <input type="checkbox" checked={tableConfig.showActions} onChange={() => toggleConfig('showActions')} />
-                                Actions (⚙️)
-                            </label>
+                            {isEditor && 
+                                <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", cursor: "pointer", color: "#475569" }}>
+                                    <input type="checkbox" checked={tableConfig.showActions} onChange={() => toggleConfig('showActions')} />
+                                    Actions (⚙️)
+                                </label>
+                            }
                             <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", cursor: "pointer", color: "#475569" }}>
                                 <input type="checkbox" checked={tableConfig.showDates} onChange={() => toggleConfig('showDates')} />
                                 Dates (Start/End)
@@ -509,7 +511,7 @@ export const GanttChart = ({ tasks, onSave, onStart, onExecute, onComplete, onRe
                             Area <Resizer element="area" />
                         </div>
                         
-                        {tableConfig.showActions && (
+                        {tableConfig.showActions && isEditor && (
                         <div title="Actions" style={{ position: 'relative', width: `${colWidths.actions}px`, textAlign: 'center', flexShrink: 0, borderRight: "0.1rem #c0c5cc solid" }}>
                             ⚙️ <Resizer element="actions" />
                         </div>
@@ -571,7 +573,7 @@ export const GanttChart = ({ tasks, onSave, onStart, onExecute, onComplete, onRe
                                 {area.items.map((item, iIdx) => (
                                     <div key={`item-${iIdx}`} style={{ display: 'flex' }}>
                                         
-                                        {tableConfig.showActions && (
+                                        {tableConfig.showActions && isEditor && (
                                         <div style={{ width: `${colWidths.actions}px`, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', boxSizing: 'border-box' }}>
                                             <button 
                                                 style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1rem', padding: '4px' }}
