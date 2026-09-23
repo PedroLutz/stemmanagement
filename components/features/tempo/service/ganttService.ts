@@ -170,7 +170,7 @@ export const validateSaveActual = (realData: RealData, gantt: GanttResType, allG
     })
 
     for (const s of successors) {
-        if (new Date(s.gantt_data[1].start) < new Date(realData.id)) {
+        if (s.gantt_data[1].start != null && new Date(s.gantt_data[1].start) < new Date(realData.id)) {
             return {
                 isValid: false, message: `One of this task's successors starts before the new ending date!\n
                 Successor: ${s.wbs_item.wbs_area.name} - ${s.wbs_item.name}.
